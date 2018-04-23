@@ -138,7 +138,7 @@ class gui_design(QWidget):
 		
 		#edit tools
 		self.tBlend= QRadioButton("Blend     ")
-		self.tBlend.setToolTip('Half-transparent brush')
+		self.tBlend.setToolTip('Semi-transparent brush')
 		self.tLighten= QRadioButton("Lighten   ")
 		self.tLighten.setToolTip('Increase the lightness of a specific region')
 		self.tDarken= QRadioButton("Darken    ")
