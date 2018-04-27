@@ -110,7 +110,7 @@ class tool_free_mesh:
 	
 	def liquify(self, origin):
 		#sacrifice anti-alias for speed
-		return origin[self.mask_y.astype(np.uint8),self.mask_x.astype(np.uint8)]
+		return origin[self.mask_y.astype(np.int),self.mask_x.astype(np.int)]
 	
 	def next(self):
 		self.blendphase = self.blendphase+1
