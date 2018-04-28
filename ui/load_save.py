@@ -6,17 +6,19 @@ from PyQt5.QtWidgets import QFileDialog
 def save_image(image):
 	save_dir = QFileDialog.getSaveFileName(None, 'Select a folder to save the image', '.', 'PNG (*.png);;JPG(*.jpg);;BMP (*.bmp)')
 	save_dir = str(save_dir[0])
-	if image is not None:
-		print('save to (%s)' % save_dir)
-		cv2.imwrite(save_dir, cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+	if save_dir=="": return
+	if image is None: return
+	print('save to (%s)' % save_dir)
+	cv2.imwrite(save_dir, cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
 def save_image_rgba(image, mask):
 	save_dir = QFileDialog.getSaveFileName(None, 'Select a folder to save the image', '.', 'PNG (*.png)')
 	save_dir = str(save_dir[0])
-	if (image is not None) and (mask is not None):
-		print('save to (%s)' % save_dir)
-		img_RGBA = cv2.merge((image[:,:,2], image[:,:,1], image[:,:,0], mask[:,:,0]))
-		cv2.imwrite(save_dir, img_RGBA)
+	if save_dir=="": return
+	if (image is None) or (mask is None): return
+	print('save to (%s)' % save_dir)
+	img_RGBA = cv2.merge((image[:,:,2], image[:,:,1], image[:,:,0], mask[:,:,0]))
+	cv2.imwrite(save_dir, img_RGBA)
 
 def load_image():
 	load_dir = QFileDialog.getOpenFileName(None, 'Select an image to load', '.')
