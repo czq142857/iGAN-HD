@@ -47,9 +47,10 @@ class iganhd_wrapper(QThread):
 			self.msleep(time_to_wait)
 
 	def generate_run(self, window, image, mask, edge):
-		def update_image_signal(img):
+		def update_image_signal(img, save_flag):
 			self.result_img = img
-			self.keep_img = np.concatenate((self.keep_img, [img]), axis=0)
+			if (save_flag):
+				self.keep_img = np.concatenate((self.keep_img, [img]), axis=0)
 			window.update_slider.emit(self.slider_step)
 			window.update_image_signal()
 		color_flag = self.check_notblack(mask)

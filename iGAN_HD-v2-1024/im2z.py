@@ -175,10 +175,13 @@ class IM2Z(object):
         z_value -= 0.1 * z_grads
         z_value = np.clip(z_value, -0.8, 0.8)
         print(value)
-      fdict[self.z]  = z_value
-      img = self.sess.run(self.gen_out, feed_dict=fdict)
-      img = ((img[0]+1)*127.999).astype(np.uint8)
-      signal_function(img)
+        fdict[self.z]  = z_value
+        img = self.sess.run(self.gen_out, feed_dict=fdict)
+        img = ((img[0]+1)*127.999).astype(np.uint8)
+        if (i%4==3):
+          signal_function(img, True)
+        else:
+          signal_function(img, False)
     print('[End] optimizing z, time spent ' + '{}'.format(time.time()-time_start))
     #return img_best, err_c, err_e
 
@@ -304,10 +307,10 @@ class IM2Z(object):
 
     data = glob(os.path.join("./data", self.dataset_name, self.input_fname_pattern))
     imgs_raw = np.array([get_image(path, self.output_height, self.output_width, crop=False) 
-    	for path in data[0:self.batch_size]])
+        for path in data[0:self.batch_size]])
     print(imgs_raw.shape)
     loss, imgs_recover = self.sess.run([self.loss, self.imgs_recover], 
-    	feed_dict={self.image_batch_placeholder:imgs_raw}) 
+        feed_dict={self.image_batch_placeholder:imgs_raw}) 
     print(imgs_recover.shape)
     save_images(imgs_raw, image_manifold_size(self.batch_size), './tests/test_raw_imgs.png')
     save_images(imgs_recover, image_manifold_size(self.batch_size), './tests/test_raw_imgs_recover.png')
