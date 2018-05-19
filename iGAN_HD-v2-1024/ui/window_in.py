@@ -19,6 +19,7 @@ class window_in(QWidget):
 
 	update_color = pyqtSignal(str)
 	update_image = pyqtSignal()
+	update_slider = pyqtSignal(int)
 
 	def __init__(self, wrapper, FLAGS):
 		QWidget.__init__(self)
@@ -47,7 +48,7 @@ class window_in(QWidget):
 		self.init_color()
 		self.pos = None
 		self.scale = FLAGS.win_width / float(FLAGS.output_width)
-		self.brushWidth = int(8 * self.scale)
+		self.brushWidth = int(64 * self.scale)
 		self.type = 'brush'
 		self.tool_brush = tool_brush(self.img_width, self.img_height, self.brushWidth, self.scale)
 		self.tool_color = tool_color(self.img_width, self.img_height, self.brushWidth, self.scale)
@@ -224,10 +225,16 @@ class window_in(QWidget):
 		self.update()
 
 	def generate_result(self):
-		self.wrapper.generate(self.current_img,self.current_mask,self.current_edge)
+		self.wrapper.generate(self,self.current_img,self.current_mask,self.current_edge)
+	
+	def update_image_signal(self):
 		self.update_image.emit()
 		self.update()
-
+	
+	def get_image_slider(self, num):
+		self.wrapper.get_image_slider(num)
+		self.update_image_signal()
+	
 	def adopt_result(self):
 		self.current_img = np.copy(self.wrapper.result_img)
 		self.previous_img = np.copy(self.current_img)
@@ -408,6 +415,6 @@ def make_background(width, height):
 	bg = np.full((height,width,3), 255, np.uint8)
 	for i in range(height):
 		for j in range(width):
-			if (int(i/8)+int(j/8))%2==0:
+			if (int(i/16)+int(j/16))%2==0:
 				bg[i][j] = [204,204,204]
 	return bg

@@ -3,7 +3,7 @@ from scipy.spatial import Delaunay
 import cv2
 
 
-class tool_free_mesh:
+class tool_mesh:
 	def __init__(self, img_width, img_height, scale):
 		self.img_width = img_width
 		self.img_height = img_height
@@ -31,11 +31,6 @@ class tool_free_mesh:
 			if self.point_selected is not None:
 				self.points[self.point_selected][0] = int(points[len(points)-1].x() / self.scale)
 				self.points[self.point_selected][1] = int(points[len(points)-1].y() / self.scale)
-			elif len(points)==1:
-				newpoints = [int(points[len(points)-1].x()/self.scale),int(points[len(points)-1].y()/self.scale)]
-				self.points_origin = np.append(self.points_origin, [self.warp_single_point(newpoints,self.points_origin,self.points,make_tri(self.points_origin))],axis=0)
-				self.points = np.append(self.points, [newpoints],axis=0)
-				self.point_selected = len(self.points)-1
 		else:
 			self.blendphase=0
 			if self.point_selected is not None:
@@ -44,7 +39,7 @@ class tool_free_mesh:
 			self.point_selected = None
 		tri = make_tri(self.points_origin)
 		tri.points[:,:] = self.points[:,:]
-		
+			
 		#liquify
 		self.warp(self.points_origin, self.points, tri)
 		self.temp_img = self.liquify(image)
@@ -92,25 +87,9 @@ class tool_free_mesh:
 		self.mask_x = np.reshape(ps_2[:,0],(self.img_height,self.img_width))
 		self.mask_y = np.reshape(ps_2[:,1],(self.img_height,self.img_width))
 	
-	def warp_single_point(self, point, im1_pts, im2_pts, tri):
-		tri_index = tri.simplices
-		tri_num = len(tri_index)
-		ps_1 = np.zeros((1,3), np.float32)
-		ps_2 = np.zeros((1,3), np.float32)
-		ps_1[0][0] = point[0]
-		ps_1[0][1] = point[1]
-		ps_1[0][2] = 1
-		i = Delaunay.find_simplex(tri,ps_1[:,0:2])[0]
-		#transform matrix
-		tf_1  = np.array([[im1_pts[tri_index[i][0]][0],im1_pts[tri_index[i][1]][0],im1_pts[tri_index[i][2]][0]],[im1_pts[tri_index[i][0]][1],im1_pts[tri_index[i][1]][1],im1_pts[tri_index[i][2]][1]],[1,1,1]])
-		tf_2  = np.array([[im2_pts[tri_index[i][0]][0],im2_pts[tri_index[i][1]][0],im2_pts[tri_index[i][2]][0]],[im2_pts[tri_index[i][0]][1],im2_pts[tri_index[i][1]][1],im2_pts[tri_index[i][2]][1]],[1,1,1]])
-		tf_warp = np.dot(tf_1,np.linalg.pinv(tf_2))
-		ps_2[0,:] = np.dot(ps_1[0,:],np.transpose(tf_warp))
-		return [int(ps_2[0][0]),int(ps_2[0][1])]
-	
 	def liquify(self, origin):
 		#sacrifice anti-alias for speed
-		return origin[self.mask_y.astype(np.int),self.mask_x.astype(np.int)]
+		return origin[self.mask_y.astype(np.int32),self.mask_x.astype(np.int32)]
 	
 	def next(self):
 		self.blendphase = self.blendphase+1
@@ -122,7 +101,6 @@ class tool_free_mesh:
 	def reset(self):
 		self.mask_x = None
 		self.mask_y = None
-		self.points_origin = make_points(self.img_width,self.img_height)
 		self.points = np.copy(self.points_origin)
 		self.point_selected = None
 		self.temp_img = None
@@ -130,11 +108,15 @@ class tool_free_mesh:
 		self.blendphase = 0
 	
 def make_points(width, height):
-	points = np.zeros((2*2,2), np.int32)
-	for i in range(2):
-		for j in range(2):
-			points[i*2+j][0] = int(j*width)
-			points[i*2+j][1] = int(i*height)
+	pts_w = 8
+	pts_h = 8
+	gap_w = width/pts_w
+	gap_h = height/pts_h
+	points = np.zeros(((pts_h+1)*(pts_w+1),2), np.int32)
+	for i in range(pts_h+1):
+		for j in range(pts_w+1):
+			points[i*(pts_w+1)+j][0] = int(j*gap_w)
+			points[i*(pts_w+1)+j][1] = int(i*gap_h)
 	return points
 
 def make_tri(points):

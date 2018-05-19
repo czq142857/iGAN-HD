@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from .tf_filters import tf_deriv
+from tf_filters import tf_deriv
 
 
 def tf_select_by_idx(a, idx):

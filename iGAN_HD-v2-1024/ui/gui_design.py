@@ -236,8 +236,26 @@ class gui_design(QWidget):
 		hbox1.addWidget(self.edgetool_box)
 		hbox1.addStretch(1)
 		
+		###z-slider
+		self.slider_box = QGroupBox()
+		self.slider_box.setTitle('Z-slider')
+		vbox2 = QVBoxLayout()
+		vbox2.addStretch(1)
+		self.slider = QSlider(Qt.Horizontal)
+		self.slider.setMinimum(0)
+		self.slider.setMaximum(wrapper.slider_step)
+		self.slider.setValue(0)
+		self.slider.setTickPosition(QSlider.TicksBelow)
+		self.slider.setTickInterval(1)
+		self.slider.setFixedWidth(400)
+		vbox2.addWidget(self.slider)
+		vbox2.addStretch(1)
+		self.slider_box.setLayout(vbox2)
+		hbox1.addWidget(self.slider_box)
+		hbox1.addStretch(1)
+		
 		vbox1.addLayout(hbox1)
-		vbox1.addStretch(1)	
+		vbox1.addStretch(1)
 		
 		#window size
 		self.setLayout(vbox1)
@@ -283,6 +301,9 @@ class gui_design(QWidget):
 		self.bSave_edge.clicked.connect(self.in_window.save_edge)
 		self.bUndo_edge.clicked.connect(self.in_window.undo_edge)
 		self.bClear_edge.clicked.connect(self.in_window.clear_edge)
+		
+		self.in_window.update_slider.connect(self.slider.setValue)
+		self.slider.valueChanged.connect(self.in_window.get_image_slider)
 
 	def enable_color_layer(self):
 		self.in_window.layer_color = self.cColor_layer.isChecked()

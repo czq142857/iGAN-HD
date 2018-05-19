@@ -286,7 +286,7 @@ def visualize_all_dims(sess, branchgan, config, name=""):
     image_frame_size = image_manifold_size(config.batch_size)
     if branchgan.use_z_pyramid:
       for level in xrange(branchgan.n_levels - 1):
-        for i in range(branchgan.z_dim):
+      	for i in range(branchgan.z_dim):
           z_dict = get_sample_z_dict(branchgan, config, option=4, level=level, index=i)
           print(level, i)
           samples = sess.run(branchgan.G_pyramid[-1], feed_dict=z_dict)

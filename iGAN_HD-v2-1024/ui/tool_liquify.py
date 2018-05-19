@@ -46,7 +46,7 @@ class tool_liquify:
 	
 	def liquify(self, origin):
 		#sacrifice anti-alias for speed
-		return origin[self.mask_y.astype(np.int),self.mask_x.astype(np.int)]
+		return origin[self.mask_y.astype(np.int32),self.mask_x.astype(np.int32)]
 
 	def update(self, image, mask, points):
 		num_pnts = len(points)
